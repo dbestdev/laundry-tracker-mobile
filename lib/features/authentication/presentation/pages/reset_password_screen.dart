@@ -13,12 +13,10 @@ import '../providers/auth_providers.dart';
 
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   final String email;
-  final String otp;
 
   const ResetPasswordScreen({
     super.key,
     required this.email,
-    required this.otp,
   });
 
   @override
@@ -27,12 +25,14 @@ class ResetPasswordScreen extends ConsumerStatefulWidget {
 
 class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _otpController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void dispose() {
+    _otpController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -47,7 +47,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
     await ref.read(authStateNotifierProvider.notifier).resetPassword(
           email: widget.email,
-          otp: widget.otp,
+          otp: _otpController.text,
           newPassword: _newPasswordController.text,
         );
 
@@ -225,6 +225,30 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
 
                 const SizedBox(height: 40),
 
+                // OTP Field
+                AnimatedTextField(
+                  label: 'Verification Code',
+                  hint: 'Enter 6-digit code',
+                  controller: _otpController,
+                  prefixIcon: Icons.pin_outlined,
+                  keyboardType: TextInputType.number,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter verification code';
+                    }
+                    if (value.length != 6) {
+                      return 'Code must be 6 digits';
+                    }
+                    return null;
+                  },
+                  textInputAction: TextInputAction.next,
+                )
+                    .animate()
+                    .fadeIn(duration: 400.ms, delay: 400.ms)
+                    .slideY(begin: 0.2, end: 0),
+
+                const SizedBox(height: 16),
+
                 // New Password Field
                 AnimatedTextField(
                   label: 'New Password',
@@ -238,7 +262,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   onChanged: (value) => setState(() {}),
                 )
                     .animate()
-                    .fadeIn(duration: 400.ms, delay: 400.ms)
+                    .fadeIn(duration: 400.ms, delay: 500.ms)
                     .slideY(begin: 0.2, end: 0),
 
                 const SizedBox(height: 12),
@@ -248,7 +272,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   password: _newPasswordController.text,
                 )
                     .animate()
-                    .fadeIn(duration: 400.ms, delay: 500.ms)
+                    .fadeIn(duration: 400.ms, delay: 600.ms)
                     .slideY(begin: 0.2, end: 0),
 
                 const SizedBox(height: 16),
@@ -267,7 +291,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   onFieldSubmitted: (_) => _handleResetPassword(),
                 )
                     .animate()
-                    .fadeIn(duration: 400.ms, delay: 600.ms)
+                    .fadeIn(duration: 400.ms, delay: 700.ms)
                     .slideY(begin: 0.2, end: 0),
 
                 const SizedBox(height: 32),
@@ -279,7 +303,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   isLoading: _isLoading,
                 )
                     .animate()
-                    .fadeIn(duration: 400.ms, delay: 700.ms)
+                    .fadeIn(duration: 400.ms, delay: 800.ms)
                     .slideY(begin: 0.2, end: 0),
 
                 const SizedBox(height: 24),

@@ -45,8 +45,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
     if (authState is AuthPasswordResetRequested) {
       if (mounted) {
+        // Navigate directly to reset password screen
         context.push(
-          '${AppRoutes.otpVerification}?email=${_emailController.text.trim()}&fromSignUp=false',
+          '${AppRoutes.resetPassword}?email=${_emailController.text.trim()}',
         );
       }
     } else if (authState is AuthError) {

@@ -63,7 +63,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
   void _handleVerifyOtp() async {
     if (_otpController.text.length != AppConstants.otpLength) {
-      _showSnackBar('Please enter the complete OTP');
+      _showSnackBar('Please enter the complete OTP', isError: true);
       return;
     }
 
@@ -78,7 +78,7 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     final authState = ref.read(authStateNotifierProvider);
 
-    if (authState is AuthOtpVerified) {
+    if (authState is AuthAuthenticated) {
       if (mounted) {
         if (widget.isFromSignUp) {
           // From sign-up flow: show success and go to home
@@ -91,23 +91,34 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
         }
       }
     } else if (authState is AuthError) {
-      _showSnackBar(authState.message);
+      _showSnackBar(authState.message, isError: true);
       _otpController.clear();
     }
   }
 
-  void _handleResendOtp() {
+  void _handleResendOtp() async {
     if (_remainingSeconds > 0) return;
 
-    _showSnackBar('OTP sent successfully!');
-    _startTimer();
+    await ref.read(authStateNotifierProvider.notifier).resendOtp(
+          email: widget.email,
+        );
+
+    final authState = ref.read(authStateNotifierProvider);
+
+    if (authState is AuthOtpSent) {
+      _showSnackBar(authState.message);
+      _startTimer();
+    } else if (authState is AuthError) {
+      _showSnackBar(authState.message, isError: true);
+    }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? AppColors.error : null,
       ),
     );
   }
@@ -310,35 +321,6 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
               )
                   .animate()
                   .fadeIn(duration: 400.ms, delay: 400.ms)
-                  .slideY(begin: 0.2, end: 0),
-
-              const SizedBox(height: 8),
-
-              // Hint about dummy OTP
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.info.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.info_outline, size: 20, color: AppColors.info),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        'For testing, use: ${AppConstants.dummyOtp}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.info,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              )
-                  .animate()
-                  .fadeIn(duration: 400.ms, delay: 500.ms)
                   .slideY(begin: 0.2, end: 0),
 
               const SizedBox(height: 40),

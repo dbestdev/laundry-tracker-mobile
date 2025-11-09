@@ -132,13 +132,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: 'resetPassword',
         pageBuilder: (context, state) {
           final email = state.uri.queryParameters['email'] ?? '';
-          final otp = state.uri.queryParameters['otp'] ?? '';
 
           return CustomTransitionPage(
             key: state.pageKey,
             child: ResetPasswordScreen(
               email: email,
-              otp: otp,
             ),
             transitionsBuilder: (context, animation, secondaryAnimation, child) {
               return _slideTransition(animation, child);

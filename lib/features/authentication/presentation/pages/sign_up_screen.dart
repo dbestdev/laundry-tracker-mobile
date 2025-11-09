@@ -47,7 +47,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     }
 
     if (!_agreedToTerms) {
-      _showSnackBar('Please agree to terms and conditions');
+      _showSnackBar('Please agree to terms and conditions', isError: true);
       return;
     }
 
@@ -68,22 +68,23 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     // Listen to auth state changes
     final authState = ref.read(authStateNotifierProvider);
 
-    if (authState is AuthSignUpSuccess) {
+    if (authState is AuthOtpSent) {
       if (mounted) {
         context.push(
           '${AppRoutes.otpVerification}?email=${_emailController.text.trim()}&fromSignUp=true',
         );
       }
     } else if (authState is AuthError) {
-      _showSnackBar(authState.message);
+      _showSnackBar(authState.message, isError: true);
     }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? AppColors.error : null,
       ),
     );
   }

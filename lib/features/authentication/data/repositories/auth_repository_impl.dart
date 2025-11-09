@@ -14,7 +14,7 @@ class AuthRepositoryImpl implements AuthRepository {
   });
 
   @override
-  Future<Either<String, UserEntity>> signUp({
+  Future<Either<String, String>> signUp({
     required String firstName,
     required String lastName,
     required String email,
@@ -22,13 +22,31 @@ class AuthRepositoryImpl implements AuthRepository {
     String? phoneNumber,
   }) async {
     try {
-      // Call backend API to register user
+      // Call backend API to send OTP email
       final response = await remoteDataSource.register(
         email: email,
         password: password,
         firstName: firstName,
         lastName: lastName,
         phoneNumber: phoneNumber,
+      );
+
+      return Right(response.message);
+    } catch (e) {
+      return Left(e.toString().replaceAll('Exception: ', ''));
+    }
+  }
+
+  @override
+  Future<Either<String, UserEntity>> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      // Call backend API to verify OTP and create user
+      final response = await remoteDataSource.verifyOtp(
+        email: email,
+        otp: otp,
       );
 
       // Save user data locally
@@ -44,20 +62,15 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Future<Either<String, bool>> verifyOtp({
+  Future<Either<String, String>> resendOtp({
     required String email,
-    required String otp,
   }) async {
     try {
-      final isValid = await localDataSource.verifyOtp(otp);
-
-      if (!isValid) {
-        return const Left('Invalid OTP');
-      }
-
-      return const Right(true);
+      // Call backend API to resend OTP
+      final response = await remoteDataSource.resendOtp(email: email);
+      return Right(response.message);
     } catch (e) {
-      return Left('Failed to verify OTP: ${e.toString()}');
+      return Left(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -102,13 +115,11 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<String, bool>> requestPasswordReset(String email) async {
     try {
-      // Simulate API delay
-      await Future.delayed(const Duration(seconds: 2));
-
-      // For dummy implementation, always succeed
+      // Call backend API to send password reset OTP
+      final response = await remoteDataSource.requestPasswordReset(email: email);
       return const Right(true);
     } catch (e) {
-      return Left('Failed to request password reset: ${e.toString()}');
+      return Left(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -119,17 +130,15 @@ class AuthRepositoryImpl implements AuthRepository {
     required String newPassword,
   }) async {
     try {
-      // Verify OTP
-      final isValid = await localDataSource.verifyOtp(otp);
-
-      if (!isValid) {
-        return const Left('Invalid OTP');
-      }
-
-      // For dummy implementation, just return success
+      // Call backend API to reset password
+      await remoteDataSource.resetPassword(
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      );
       return const Right(true);
     } catch (e) {
-      return Left('Failed to reset password: ${e.toString()}');
+      return Left(e.toString().replaceAll('Exception: ', ''));
     }
   }
 

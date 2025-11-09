@@ -2,8 +2,8 @@ import 'package:dartz/dartz.dart';
 import '../entities/user_entity.dart';
 
 abstract class AuthRepository {
-  /// Sign up a new user
-  Future<Either<String, UserEntity>> signUp({
+  /// Sign up a new user - sends OTP email
+  Future<Either<String, String>> signUp({
     required String firstName,
     required String lastName,
     required String email,
@@ -11,10 +11,15 @@ abstract class AuthRepository {
     String? phoneNumber,
   });
 
-  /// Verify OTP
-  Future<Either<String, bool>> verifyOtp({
+  /// Verify OTP and create user
+  Future<Either<String, UserEntity>> verifyOtp({
     required String email,
     required String otp,
+  });
+
+  /// Resend OTP email
+  Future<Either<String, String>> resendOtp({
+    required String email,
   });
 
   /// Sign in a user

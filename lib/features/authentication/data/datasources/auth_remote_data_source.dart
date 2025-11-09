@@ -4,7 +4,7 @@ import '../models/user_model.dart';
 
 /// Remote data source for authentication
 abstract class AuthRemoteDataSource {
-  Future<AuthResponse> register({
+  Future<RegisterResponse> register({
     required String email,
     required String password,
     required String firstName,
@@ -13,9 +13,28 @@ abstract class AuthRemoteDataSource {
     String? fcmToken,
   });
 
+  Future<AuthResponse> verifyOtp({
+    required String email,
+    required String otp,
+  });
+
+  Future<RegisterResponse> resendOtp({
+    required String email,
+  });
+
   Future<AuthResponse> login({
     required String email,
     required String password,
+  });
+
+  Future<RegisterResponse> requestPasswordReset({
+    required String email,
+  });
+
+  Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
   });
 
   Future<UserModel> getProfile();
@@ -27,7 +46,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   AuthRemoteDataSourceImpl({required this.dioClient});
 
   @override
-  Future<AuthResponse> register({
+  Future<RegisterResponse> register({
     required String email,
     required String password,
     required String firstName,
@@ -48,7 +67,45 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         },
       );
 
+      return RegisterResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<AuthResponse> verifyOtp({
+    required String email,
+    required String otp,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        ApiConstants.verifyOtp,
+        data: {
+          'email': email,
+          'otp': otp,
+        },
+      );
+
       return AuthResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<RegisterResponse> resendOtp({
+    required String email,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        ApiConstants.resendOtp,
+        data: {
+          'email': email,
+        },
+      );
+
+      return RegisterResponse.fromJson(response.data);
     } catch (e) {
       rethrow;
     }
@@ -69,6 +126,46 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       return AuthResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<RegisterResponse> requestPasswordReset({
+    required String email,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        ApiConstants.forgotPassword,
+        data: {
+          'email': email,
+        },
+      );
+
+      return RegisterResponse.fromJson(response.data);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Map<String, dynamic>> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await dioClient.post(
+        ApiConstants.resetPassword,
+        data: {
+          'email': email,
+          'otp': otp,
+          'newPassword': newPassword,
+        },
+      );
+
+      return response.data as Map<String, dynamic>;
     } catch (e) {
       rethrow;
     }
@@ -106,6 +203,31 @@ class AuthResponse {
     return {
       'accessToken': accessToken,
       'user': user.toJson(),
+    };
+  }
+}
+
+/// Registration response model (for OTP flow)
+class RegisterResponse {
+  final String message;
+  final String email;
+
+  RegisterResponse({
+    required this.message,
+    required this.email,
+  });
+
+  factory RegisterResponse.fromJson(Map<String, dynamic> json) {
+    return RegisterResponse(
+      message: json['message'] as String,
+      email: json['email'] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'message': message,
+      'email': email,
     };
   }
 }

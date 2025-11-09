@@ -54,15 +54,16 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         context.go(AppRoutes.home);
       }
     } else if (authState is AuthError) {
-      _showSnackBar(authState.message);
+      _showSnackBar(authState.message, isError: true);
     }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
+        backgroundColor: isError ? AppColors.error : null,
       ),
     );
   }

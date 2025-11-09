@@ -82,7 +82,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
     state = result.fold(
       (error) => AuthState.error(error),
-      (user) => AuthState.signUpSuccess(user),
+      (message) => AuthState.otpSent(message, email),
     );
   }
 
@@ -96,7 +96,20 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
 
     state = result.fold(
       (error) => AuthState.error(error),
-      (success) => const AuthState.otpVerified(),
+      (user) => AuthState.authenticated(user),
+    );
+  }
+
+  Future<void> resendOtp({
+    required String email,
+  }) async {
+    state = const AuthState.loading();
+
+    final result = await repository.resendOtp(email: email);
+
+    state = result.fold(
+      (error) => AuthState.error(error),
+      (message) => AuthState.otpSent(message, email),
     );
   }
 
@@ -180,8 +193,7 @@ sealed class AuthState {
   const factory AuthState.loading() = AuthLoading;
   const factory AuthState.authenticated(UserEntity user) = AuthAuthenticated;
   const factory AuthState.unauthenticated() = AuthUnauthenticated;
-  const factory AuthState.signUpSuccess(UserEntity user) = AuthSignUpSuccess;
-  const factory AuthState.otpVerified() = AuthOtpVerified;
+  const factory AuthState.otpSent(String message, String email) = AuthOtpSent;
   const factory AuthState.passwordResetRequested() = AuthPasswordResetRequested;
   const factory AuthState.passwordResetSuccess() = AuthPasswordResetSuccess;
   const factory AuthState.error(String message) = AuthError;
@@ -204,13 +216,10 @@ class AuthUnauthenticated extends AuthState {
   const AuthUnauthenticated();
 }
 
-class AuthSignUpSuccess extends AuthState {
-  final UserEntity user;
-  const AuthSignUpSuccess(this.user);
-}
-
-class AuthOtpVerified extends AuthState {
-  const AuthOtpVerified();
+class AuthOtpSent extends AuthState {
+  final String message;
+  final String email;
+  const AuthOtpSent(this.message, this.email);
 }
 
 class AuthPasswordResetRequested extends AuthState {
