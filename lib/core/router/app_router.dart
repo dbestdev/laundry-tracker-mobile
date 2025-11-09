@@ -10,6 +10,8 @@ import '../../features/authentication/presentation/pages/otp_verification_screen
 import '../../features/authentication/presentation/pages/forgot_password_screen.dart';
 import '../../features/authentication/presentation/pages/reset_password_screen.dart';
 import '../../features/home/presentation/pages/home_screen.dart';
+import '../../features/notifications/presentation/pages/notifications_screen.dart';
+import '../../features/orders/presentation/pages/view_all_orders_screen.dart';
 
 // Route names
 class AppRoutes {
@@ -25,6 +27,8 @@ class AppRoutes {
   static const String resetPassword = '/reset-password';
   static const String passwordResetSuccess = '/password-reset-success';
   static const String home = '/home';
+  static const String notifications = '/notifications';
+  static const String viewAllOrders = '/view-all-orders';
 }
 
 // Router provider
@@ -155,6 +159,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               opacity: animation,
               child: child,
             );
+          },
+        ),
+      ),
+
+      // Notifications Route
+      GoRoute(
+        path: AppRoutes.notifications,
+        name: 'notifications',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const NotificationsScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return _slideTransition(animation, child);
+          },
+        ),
+      ),
+
+      // View All Orders Route
+      GoRoute(
+        path: AppRoutes.viewAllOrders,
+        name: 'viewAllOrders',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          key: state.pageKey,
+          child: const ViewAllOrdersScreen(),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+            return _slideTransition(animation, child);
           },
         ),
       ),

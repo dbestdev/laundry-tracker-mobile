@@ -1,28 +1,28 @@
 import 'package:flutter/material.dart';
 
-/// App Color Palette - Fresh Teal & Coral Theme
+/// App Color Palette - Ocean Blue & Sky (Water-Inspired Theme)
 class AppColors {
   AppColors._();
 
-  // Primary Colors
-  static const Color primary = Color(0xFF00BFA5); // Fresh Teal
-  static const Color primaryDark = Color(0xFF00897B);
-  static const Color primaryLight = Color(0xFF5DF2D6);
+  // Primary Colors - Ocean Blue
+  static const Color primary = Color(0xFF1E88E5); // Ocean Blue
+  static const Color primaryDark = Color(0xFF0D47A1); // Deep Ocean
+  static const Color primaryLight = Color(0xFF64B5F6); // Light Ocean Blue
 
-  // Secondary Colors
-  static const Color secondary = Color(0xFFFF6B6B); // Coral Red
-  static const Color secondaryDark = Color(0xFFD84545);
-  static const Color secondaryLight = Color(0xFFFF9999);
+  // Secondary Colors - Sky Blue
+  static const Color secondary = Color(0xFF42A5F5); // Sky Blue
+  static const Color secondaryDark = Color(0xFF1976D2); // Deep Sky
+  static const Color secondaryLight = Color(0xFF90CAF9); // Light Sky
 
-  // Accent Colors
-  static const Color accent = Color(0xFF4ECDC4); // Light Teal
-  static const Color accentDark = Color(0xFF3AAFA9);
-  static const Color accentLight = Color(0xFF80DEEA);
+  // Accent Colors - Bright Blue
+  static const Color accent = Color(0xFF64B5F6); // Light Blue
+  static const Color accentDark = Color(0xFF1976D2); // Deep Blue
+  static const Color accentLight = Color(0xFFBBDEFB); // Very Light Blue
 
-  // Background & Surface
-  static const Color background = Color(0xFFF8FAFB); // Off-white
+  // Background & Surface - Water-inspired
+  static const Color background = Color(0xFFF5F9FF); // Very Light Blue tint
   static const Color surface = Color(0xFFFFFFFF); // Pure white
-  static const Color surfaceVariant = Color(0xFFF1F5F9);
+  static const Color surfaceVariant = Color(0xFFE3F2FD); // Light Blue surface
 
   // Text Colors
   static const Color textPrimary = Color(0xFF1A1A1A);
@@ -34,11 +34,11 @@ class AppColors {
   static const Color success = Color(0xFF10B981);
   static const Color error = Color(0xFFEF4444);
   static const Color warning = Color(0xFFF59E0B);
-  static const Color info = Color(0xFF3B82F6);
+  static const Color info = Color(0xFF2196F3);
 
-  // Gradient Colors
+  // Gradient Colors - Water-themed
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, accent],
+    colors: [primary, primaryLight],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
@@ -50,9 +50,16 @@ class AppColors {
   );
 
   static const LinearGradient backgroundGradient = LinearGradient(
-    colors: [background, surface],
+    colors: [Color(0xFFE3F2FD), Color(0xFFFFFFFF)],
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
+  );
+
+  // Water wave gradient - for special effects
+  static const LinearGradient waterGradient = LinearGradient(
+    colors: [Color(0xFF1E88E5), Color(0xFF42A5F5), Color(0xFF64B5F6)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
   );
 
   // Overlays
