@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "610862064435",
+    "project_id": "laundrytracker-e5db7",
+    "storage_bucket": "laundrytracker-e5db7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:610862064435:android:a0f125df47f621bd851446",
+        "android_client_info": {
+          "package_name": "com.dbestdev.laundrytracker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-0sNg4VqQnjSTKZQuxaJoVh0WTS6USNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

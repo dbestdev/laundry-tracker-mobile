@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'core/services/notification_service.dart';
 import 'features/authentication/presentation/providers/auth_providers.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +15,7 @@ void main() async {
   // Initialize Firebase
   // Note: Firebase will be configured after you add google-services.json
   try {
-    await Firebase.initializeApp();
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
     debugPrint('Firebase initialized successfully');
   } catch (e) {
     debugPrint('Firebase initialization skipped: $e');
