@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/services/notification_service.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -55,12 +56,35 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     },
   ];
 
+  void _testLocalNotification() async {
+    await NotificationService().showNotification(
+      title: 'Test Notification',
+      body: 'This is a test notification from Laundry Tracker!',
+      payload: 'test',
+    );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Test notification sent!'),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final unreadCount = _notifications.where((n) => !n['isRead']).length;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: _testLocalNotification,
+        icon: const Icon(Icons.notifications_active),
+        label: const Text('Test Notification'),
+        backgroundColor: AppColors.primary,
+      ),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
