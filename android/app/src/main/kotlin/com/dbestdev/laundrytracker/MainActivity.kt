@@ -1,4 +1,4 @@
-package com.example.laundry_tracker_mobile
+package com.dbestdev.laundrytracker
 
 import io.flutter.embedding.android.FlutterActivity
 
