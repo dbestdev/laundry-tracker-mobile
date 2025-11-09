@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/network/dio_client.dart';
 import '../../data/datasources/auth_local_data_source.dart';
+import '../../data/datasources/auth_remote_data_source.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../domain/entities/user_entity.dart';
@@ -11,16 +13,31 @@ final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
   throw UnimplementedError('SharedPreferences must be initialized in main.dart');
 });
 
+// Dio client provider
+final dioClientProvider = Provider<DioClient>((ref) {
+  return DioClient();
+});
+
 // Auth local data source provider
 final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
   final sharedPrefs = ref.watch(sharedPreferencesProvider);
   return AuthLocalDataSource(sharedPreferences: sharedPrefs);
 });
 
+// Auth remote data source provider
+final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
+  final dioClient = ref.watch(dioClientProvider);
+  return AuthRemoteDataSourceImpl(dioClient: dioClient);
+});
+
 // Auth repository provider
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   final localDataSource = ref.watch(authLocalDataSourceProvider);
-  return AuthRepositoryImpl(localDataSource: localDataSource);
+  final remoteDataSource = ref.watch(authRemoteDataSourceProvider);
+  return AuthRepositoryImpl(
+    localDataSource: localDataSource,
+    remoteDataSource: remoteDataSource,
+  );
 });
 
 // Current user provider

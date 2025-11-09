@@ -2,11 +2,16 @@ import 'package:dartz/dartz.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_local_data_source.dart';
+import '../datasources/auth_remote_data_source.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthLocalDataSource localDataSource;
+  final AuthRemoteDataSource remoteDataSource;
 
-  AuthRepositoryImpl({required this.localDataSource});
+  AuthRepositoryImpl({
+    required this.localDataSource,
+    required this.remoteDataSource,
+  });
 
   @override
   Future<Either<String, UserEntity>> signUp({
@@ -17,24 +22,24 @@ class AuthRepositoryImpl implements AuthRepository {
     String? phoneNumber,
   }) async {
     try {
-      // Create dummy user
-      final userModel = localDataSource.createDummyUser(
+      // Call backend API to register user
+      final response = await remoteDataSource.register(
+        email: email,
+        password: password,
         firstName: firstName,
         lastName: lastName,
-        email: email,
         phoneNumber: phoneNumber,
       );
 
-      // Save user (but not logged in yet, needs OTP verification)
-      await localDataSource.saveUser(userModel);
+      // Save user data locally
+      await localDataSource.saveUser(response.user);
 
-      // Generate dummy token
-      final token = 'dummy_token_${DateTime.now().millisecondsSinceEpoch}';
-      await localDataSource.saveAuthToken(token);
+      // Save auth token
+      await localDataSource.saveAuthToken(response.accessToken);
 
-      return Right(userModel.toEntity());
+      return Right(response.user.toEntity());
     } catch (e) {
-      return Left('Failed to sign up: ${e.toString()}');
+      return Left(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
@@ -63,32 +68,24 @@ class AuthRepositoryImpl implements AuthRepository {
     bool rememberMe = false,
   }) async {
     try {
-      // Validate credentials
-      final isValid = await localDataSource.validateCredentials(email, password);
+      // Call backend API to login
+      final response = await remoteDataSource.login(
+        email: email,
+        password: password,
+      );
 
-      if (!isValid) {
-        return const Left('Invalid email or password');
-      }
+      // Save user data locally
+      await localDataSource.saveUser(response.user);
 
-      // Get or create dummy user
-      var user = localDataSource.getSavedUser();
-
-      if (user == null) {
-        // Create a new dummy user if none exists
-        user = localDataSource.createDummyUser(
-          firstName: 'John',
-          lastName: 'Doe',
-          email: email,
-        );
-        await localDataSource.saveUser(user);
-      }
+      // Save auth token
+      await localDataSource.saveAuthToken(response.accessToken);
 
       // Save remember me preference
       await localDataSource.saveRememberMe(rememberMe);
 
-      return Right(user.toEntity());
+      return Right(response.user.toEntity());
     } catch (e) {
-      return Left('Failed to sign in: ${e.toString()}');
+      return Left(e.toString().replaceAll('Exception: ', ''));
     }
   }
 
